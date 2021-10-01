@@ -88,7 +88,8 @@ One command:
     
 If you don't have rust installed follow the instructions here https://rustup.rs/:
    
-   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    Restart your terminal to reload path
 
 As you can see in `package.json`, this does two things:
 
