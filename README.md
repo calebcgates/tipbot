@@ -85,6 +85,10 @@ Step 3: deploy!
 One command:
 
     yarn deploy
+    
+If you don't have rust installed follow the instructions here https://rustup.rs/:
+   
+   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 As you can see in `package.json`, this does two things:
 
