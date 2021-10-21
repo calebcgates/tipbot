@@ -38,7 +38,14 @@ const TREASURE_ACCOUNT_ID: &str =
 
 const MASTER_ACCOUNT_ID: &str = "zavodil.testnet";
 const LINKDROP_ACCOUNT_ID: &str = "linkdrop.zavodil.testnet";
-const AUTH_ACCOUNT_ID: &str = "dev-1625611642901-32969379055293";
+const AUTH_ACCOUNT_ID: &str = "dev-1625611642901-32969379055293"; //TODO: Caleb: Set this as a different account?
+
+const MASTER_ACCOUNT_ID: &str = "ninja.testnet";
+const LINKDROP_ACCOUNT_ID: &str = "linkdrop.ninja.testnet";
+// const AUTH_ACCOUNT_ID: &str = "dev-1625611642901-32969379055293"; //TODO: Caleb: Set this as a different account?
+const AUTH_ACCOUNT_ID: &str = "tipbotauth.ninja.testnet"; //Does this need to be a dev account or can it be a regular account?
+//TODO: Caleb. Ask about this before deploying live
+
 */
 
 // 0.1 NEAR

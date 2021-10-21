@@ -204,34 +204,58 @@ impl NearTips {
                          sender_account_id, amount, token_id_unwrapped, receiver_account_id, contact.category, contact.value).as_bytes());
     }
 
-    //TODO: I feel like this function should be private/ (crate)
-    // Can I just call this function direclty if it is public?  TODO: TRY!!!!
-    pub fn on_get_contact_owner_on_tip_contact_receiver_to_deposit(&mut self,
+    pub fn tip_known_near_account_directly_to_deposit(&mut self,
                                                           receiver_account_id: AccountId,
-                                                          contact: Contact,
-                                                          //amount: Balance,
-                                                          amount_wrapped: WrappedBalance,
+                                                          amount: WrappedBalance,
                                                           token_id: Option<TokenAccountId>) {
 
-//         assert_eq!(  //NO These will not be equal. predecessor_account_id will be users account and current_account_id will be the contracts address.
+        self.assert_tip_available();
+        assert!(amount.0 > 0, "Positive amount needed");
+        self.assert_check_whitelisted_token(&token_id);
+
+        let account_id = env::predecessor_account_id();
+        let account_id_prepared: ValidAccountId = ValidAccountId::try_from(account_id.clone()).unwrap();
+        let deposit: Balance = NearTips::get_deposit(self, account_id_prepared, token_id.clone()).0;
+
+        assert!(
+            amount.0 <= deposit,
+            "Not enough tokens deposited to tip (Deposit: {}. Requested: {})",
+            deposit, amount.0
+        );
+
+        //TOOD: How do I call this?
+        //TODO: DO I need to check if these functions are named elsewhere in library?
+        self.on_tip_known_near_account_directly_to_deposit( //Note: do not believe i need "ext_self" because not a cross contract call. Others call different function that calls this function... do I even need a callback?
+                account_id,
+                receiver_account_id,
+                amount.0,
+                token_id
+            )
+
+    }
+
+    //Wait does this need to be 2 functions if there is no other callback / function call in-between?
+    //Split into two functions to follow the convention for security reasons I assume
+    pub(crate) fn on_tip_known_near_account_directly_to_deposit(&mut self,
+                                                          sender_account_id: AccountId,
+                                                          receiver_account_id: AccountId,
+                                                          amount: Balance,
+                                                          token_id: Option<TokenAccountId>) {
+
+//Not needed if no callback
+//         assert_eq!(
 //             env::predecessor_account_id(),
-//             env::current_account_id(),:
+//             env::current_account_id(),
 //             "Callback can only be called from the contract"
 //         );
 
-        let amount = amount_wrapped.0;
-
         let token_id_unwrapped = NearTips::unwrap_token_id(&token_id);
 
-//         let sender_account_id = env::current_account_id();
-        let predecessor_account_id = env::predecessor_account_id();
-//         env::log(format!("@{} predecessor and @{} current",predecessor_account_id,sender_account_id).as_bytes());
-
-        self.decrease_deposit(predecessor_account_id.clone(), token_id_unwrapped.clone(), amount);
+        self.decrease_deposit(sender_account_id.clone(), token_id_unwrapped.clone(), amount);
 
         self.increase_deposit(receiver_account_id.clone(), token_id_unwrapped.clone(), amount);
 
-        env::log(format!("@{} transferred {} of {:?} to deposit of @{} [{:?} account {:?}]",
-                         predecessor_account_id, amount, token_id_unwrapped, receiver_account_id, contact.category, contact.value).as_bytes());
+        env::log(format!("@{} transferred {} of {:?} to deposit of @{}",
+                         sender_account_id, amount, token_id_unwrapped, receiver_account_id).as_bytes());
     }
 }
