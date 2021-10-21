@@ -203,4 +203,35 @@ impl NearTips {
         env::log(format!("@{} transferred {} of {:?} to deposit of @{} [{:?} account {:?}]",
                          sender_account_id, amount, token_id_unwrapped, receiver_account_id, contact.category, contact.value).as_bytes());
     }
+
+    //TODO: I feel like this function should be private/ (crate)
+    // Can I just call this function direclty if it is public?  TODO: TRY!!!!
+    pub fn on_get_contact_owner_on_tip_contact_receiver_to_deposit(&mut self,
+                                                          receiver_account_id: AccountId,
+                                                          contact: Contact,
+                                                          //amount: Balance,
+                                                          amount_wrapped: WrappedBalance,
+                                                          token_id: Option<TokenAccountId>) {
+
+//         assert_eq!(  //NO These will not be equal. predecessor_account_id will be users account and current_account_id will be the contracts address.
+//             env::predecessor_account_id(),
+//             env::current_account_id(),:
+//             "Callback can only be called from the contract"
+//         );
+
+        let amount = amount_wrapped.0;
+
+        let token_id_unwrapped = NearTips::unwrap_token_id(&token_id);
+
+//         let sender_account_id = env::current_account_id();
+        let predecessor_account_id = env::predecessor_account_id();
+//         env::log(format!("@{} predecessor and @{} current",predecessor_account_id,sender_account_id).as_bytes());
+
+        self.decrease_deposit(predecessor_account_id.clone(), token_id_unwrapped.clone(), amount);
+
+        self.increase_deposit(receiver_account_id.clone(), token_id_unwrapped.clone(), amount);
+
+        env::log(format!("@{} transferred {} of {:?} to deposit of @{} [{:?} account {:?}]",
+                         predecessor_account_id, amount, token_id_unwrapped, receiver_account_id, contact.category, contact.value).as_bytes());
+    }
 }
